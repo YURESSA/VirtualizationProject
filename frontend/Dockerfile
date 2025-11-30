@@ -51,8 +51,6 @@ WORKDIR /app
 # Копируем фронтенд билд в стандартную папку nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Копируем бекенд статику (js, css, img)
-COPY ../backend/static /app/static
 
 # Копируем шаблон nginx и скрипт entrypoint
 COPY nginx.template.conf /app/nginx.template.conf
