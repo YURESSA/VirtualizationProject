@@ -17,7 +17,7 @@
 #COPY --from=build /app/dist /usr/share/nginx/html
 #
 ## Копируем шаблон Nginx и скрипт entrypoint
-#COPY nginx.conf.template /app/nginx.conf.template
+#COPY nginx.template.conf /app/nginx.template.conf
 #COPY entrypoint.sh /entrypoint.sh
 #RUN chmod +x /entrypoint.sh
 #
