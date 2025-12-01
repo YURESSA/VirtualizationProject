@@ -42,4 +42,11 @@ Thumbs.db
 /backend/migrations/
 /backend/media/
 /media/
-/terraform/
+
+*.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+key.json
+/terraform/variables.tf
+id_rsa.pub
