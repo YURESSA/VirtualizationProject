@@ -50,3 +50,5 @@ Thumbs.db
 key.json
 /terraform/variables.tf
 id_rsa.pub
+/terraform/.terraform.lock.hcl
+/terraform/serverless/function.zip
