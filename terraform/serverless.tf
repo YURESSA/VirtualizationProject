@@ -2,12 +2,11 @@ resource "yandex_function" "reservation_cleaner" {
   name               = "reservation-cleaner"
   description        = "Удаляет неоплаченные бронирования старше 15 минут"
 
-  # обязательные поля
-  user_hash          = "v1"                # меняй при каждом обновлении кода
-  runtime            = "python311"         # доступные: python37, python38, python311
-  entrypoint         = "index.handler"     # файл index.py, функция handler
-  memory             = 256                 # кратно 128
-  execution_timeout  = 30                  # в секундах
+  user_hash          = "v1"
+  runtime            = "python311"
+  entrypoint         = "index.handler"
+  memory             = 256
+  execution_timeout  = 30
   service_account_id = var.sa_cleanup
 
   environment = {
