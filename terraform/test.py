@@ -1,66 +1,30 @@
-import psycopg2
+
+import asyncio
+import aiohttp
 import time
 
-import pytest
+URL = "http://158.160.57.165/events"
+TOTAL = 200000         # всего запросов
+CONCURRENCY = 2000    # параллельных задач
 
+sem = asyncio.Semaphore(CONCURRENCY)
 
-def test_postgres():
-    print("Тестируем подключение к PostgreSQL...")
+async def fetch(session, n):
+    async with sem:
+        start = time.time()
+        try:
+            async with session.get(URL, timeout=30) as resp:
+                status = resp.status
+                await resp.read()   # или .text() если нужно тело
+        except Exception as e:
+            status = f"ERR:{e.__class__.__name__}"
+        elapsed = time.time() - start
+        print(f"#{n} {status} {elapsed:.3f}s")
 
-    try:
-        conn = psycopg2.connect(
-            host="158.160.39.211",
-            port=5432,
-            user="ukno_user",
-            password="ukno_pass",
-            dbname="ukno",
-            connect_timeout=10
-        )
-
-        print("✅ УСПЕШНОЕ ПОДКЛЮЧЕНИЕ!")
-
-        # Выполняем тестовые запросы
-        cur = conn.cursor()
-
-        # Версия PostgreSQL
-        cur.execute("SELECT version();")
-        version = cur.fetchone()[0]
-        print(f"🔧 Версия PostgreSQL: {version}")
-
-        # Текущая база данных
-        cur.execute("SELECT current_database();")
-        db = cur.fetchone()[0]
-        print(f"📊 Текущая база: {db}")
-
-        # Список всех баз данных
-        cur.execute("SELECT datname FROM pg_database WHERE datistemplate = false;")
-        databases = [row[0] for row in cur.fetchall()]
-        print(f"📋 Все базы данных: {', '.join(databases)}")
-
-        # Информация о подключении
-        cur.execute("SELECT inet_server_addr(), inet_server_port();")
-        server_info = cur.fetchone()
-        print(f"🌐 Сервер: {server_info[0]}:{server_info[1]}")
-
-        cur.close()
-        conn.close()
-
-        print("\n🎉 PostgreSQL полностью настроен и доступен!")
-        return True
-
-    except Exception as e:
-        pytest.fail(f"❌ Ошибка подключения к PostgreSQL: {e}")
-        return False
-
+async def main():
+    async with aiohttp.ClientSession() as session:
+        tasks = [asyncio.create_task(fetch(session, i)) for i in range(1, TOTAL+1)]
+        await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
-    # Проверим несколько раз
-    MAX_ATTEMPTS = 5
-
-    for i in range(MAX_ATTEMPTS):
-        print(f"\nПопытка {i + 1}/{MAX_ATTEMPTS}:")
-        if test_postgres():
-            break
-        time.sleep(3)
-    else:
-        print("\n💥 Не удалось подключиться к PostgreSQL")
+    asyncio.run(main())
