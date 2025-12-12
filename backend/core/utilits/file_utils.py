@@ -50,13 +50,21 @@ def remove_file_if_exists(file_path: str, use_bucket: bool = True) -> None:
     :param file_path: путь к файлу (для бакета — ключ объекта)
     :param use_bucket: True — удалять из бакета, False — локально
     """
-    file_path = file_path.lstrip('/media/uploads/')
+    print("Before:", file_path)
+    file_path_s3 = file_path.removeprefix('/media/uploads/')
+    file_path_s3 = file_path_s3.lstrip('/')
+
+    print("Deleting S3 key:", file_path_s3)
+
     if use_bucket:
         try:
-            s3_client.delete_object(Bucket=Config.BUCKET_NAME, Key=file_path)
-            print(f"Файл {file_path} удалён из бакета {Config.BUCKET_NAME}")
+            s3_client.delete_object(
+                Bucket=Config.BUCKET_NAME,
+                Key=file_path_s3
+            )
+            print(f"Файл {file_path_s3} удалён из бакета {Config.BUCKET_NAME}")
         except ClientError as e:
-            print(f"Ошибка при удалении файла из бакета {file_path}: {e}")
+            print(f"Ошибка при удалении из бакета {file_path_s3}: {e}")
     else:
         if os.path.exists(file_path):
             try:
