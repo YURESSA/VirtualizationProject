@@ -54,7 +54,7 @@ def main():
     app = create_app()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=lambda: run_cleanup(app), trigger="interval", minutes=5, )
+    # scheduler.add_job(func=lambda: run_cleanup(app), trigger="interval", minutes=5, )
     scheduler.start()
 
     import atexit

@@ -19,12 +19,23 @@ def handler(event, context):
     )
     cur = conn.cursor()
     cur.execute("""
-                DELETE
-                FROM reservations
-                WHERE is_paid = false
-                  AND booked_at < %s
-                  AND is_cancelled = false RETURNING reservation_id;
-                """, (threshold,))
+        DELETE FROM payments
+        WHERE reservation_id IN (
+            SELECT reservation_id
+            FROM reservations
+            WHERE is_paid = false
+              AND booked_at < %s
+              AND is_cancelled = false
+        )
+    """, (threshold,))
+
+    cur.execute("""
+        DELETE FROM reservations
+        WHERE is_paid = false
+          AND booked_at < %s
+          AND is_cancelled = false
+        RETURNING reservation_id;
+    """, (threshold,))
 
     deleted = cur.fetchall()
     conn.commit()
