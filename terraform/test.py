@@ -3,8 +3,8 @@ import asyncio
 import aiohttp
 import time
 
-URL = "http://158.160.57.165/events"
-TOTAL = 200000         # всего запросов
+URL = "http://158.160.207.118/events"
+TOTAL = 2000000         # всего запросов
 CONCURRENCY = 2000    # параллельных задач
 
 sem = asyncio.Semaphore(CONCURRENCY)

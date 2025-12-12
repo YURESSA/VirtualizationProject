@@ -84,12 +84,12 @@ resource "yandex_compute_instance_group" "backend_group" {
     max_expansion   = 0
   }
 
-  # Авто‑масштабирование: стартуем с 1 ВМ
+  # Авто‑масштабирование: стартуем с 2 ВМ
   scale_policy {
     auto_scale {
-      initial_size           = 1
+      initial_size           = 2
       min_zone_size          = 1
-      max_size               = 3
+      max_size               = 4
       cpu_utilization_target = 60
       measurement_duration   = 60
       warmup_duration        = 30
